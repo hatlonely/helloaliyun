@@ -13,7 +13,11 @@ def load_credential_from_local():
     config.read(os.path.join(os.path.expanduser("~"), ".ossutilconfig"))
     access_key_id = config["Credentials"]["accessKeyID"]
     access_key_secret = config["Credentials"]["accessKeySecret"]
-    return access_key_id, access_key_secret
+    return {
+        "access_key_id": config["Credentials"]["accessKeyID"],
+        "access_key_secret": config["Credentials"]["accessKeySecret"],
+        "endpoint": config["Credentials"]["endpoint"],
+    }
 
 
 def encode(message):
@@ -21,7 +25,8 @@ def encode(message):
 
 
 def signature(methods, params, access_key_secret):
-    kvs = "&".join(["{}={}".format(encode(i), encode(params[i])) for i in sorted(params)])
+    kvs = "&".join(["{}={}".format(encode(i), encode(params[i]))
+                    for i in sorted(params)])
     to_sign = methods + "&" + encode("/") + "&" + "" + encode(kvs)
     return base64.b64encode(hmac.new((access_key_secret + '&').encode(), to_sign.encode(), digestmod='sha1').digest()).decode()
 
@@ -43,6 +48,7 @@ class TestUtil(unittest.TestCase):
             }, "testsecret"),
             "NPzJnV5HAdj4jkShTWKa9WwOZxU="
         )
+
 
 if __name__ == '__main__':
     unittest.main()

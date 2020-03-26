@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 
 import requests
-import urllib
 import datetime
 import random
-import hmac
-import base64
-import os
-import configparser
 import util
+import urllib
 
-access_key_id, access_key_secret = util.load_credential_from_local()
+config = util.load_credential_from_local()
+access_key_id = config["access_key_id"]
+access_key_secret = config["access_key_secret"]
 
-# https://help.aliyun.com/document_detail/74947.html?spm=a2c4g.11186623.2.22.335226c5dUnarR
+
 def preview():
+    # https://help.aliyun.com/document_detail/74947.html?spm=a2c4g.11186623.2.22.335226c5dUnarR
     res = requests.get("https://preview.imm.aliyuncs.com/index.html", params={
         "url": "https://hatlonely-test-bucket.oss-cn-beijing.aliyuncs.com/hello.docx/imm",
         "accessKeyId": access_key_id,
@@ -23,8 +22,10 @@ def preview():
     })
     print(urllib.parse.unquote(res.url))
 
+
 def encode(message):
     return urllib.parse.quote(str(message), safe='', encoding="utf-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~")
+
 
 def convert():
     random.seed()
@@ -56,6 +57,6 @@ def main():
     convert()
     preview()
 
+
 if __name__ == "__main__":
     main()
-
