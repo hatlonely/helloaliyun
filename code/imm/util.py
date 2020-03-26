@@ -7,16 +7,47 @@ import hmac
 import base64
 import unittest
 
+region_to_endpoint = {
+    "oss-cn-hangzhou": "oss-cn-hangzhou.aliyuncs.com",
+    "oss-cn-shanghai": "oss-cn-shanghai.aliyuncs.com",
+    "oss-cn-qingdao": "oss-cn-qingdao.aliyuncs.com",
+    "oss-cn-beijing": "oss-cn-beijing.aliyuncs.com",
+    "oss-cn-zhangjiakou": "oss-cn-zhangjiakou.aliyuncs.com",
+    "oss-cn-huhehaote": "oss-cn-huhehaote.aliyuncs.com",
+    "oss-cn-shenzhen": "oss-cn-shenzhen.aliyuncs.com",
+    "oss-cn-heyuan": "oss-cn-heyuan.aliyuncs.com",
+    "oss-cn-chengdu": "oss-cn-chengdu.aliyuncs.com",
+    "oss-cn-hongkong": "oss-cn-hongkong.aliyuncs.com",
+    "oss-us-west-1": "oss-us-west-1.aliyuncs.com",
+    "oss-us-east-1": "oss-us-east-1.aliyuncs.com",
+    "oss-ap-southeast-1": "oss-ap-southeast-1.aliyuncs.com",
+    "oss-ap-southeast-2": "oss-ap-southeast-2.aliyuncs.com",
+    "oss-ap-southeast-3": "oss-ap-southeast-3.aliyuncs.com",
+    "oss-ap-southeast-5": "oss-ap-southeast-5.aliyuncs.com",
+    "oss-ap-northeast-1": "oss-ap-northeast-1.aliyuncs.com",
+    "oss-ap-south-1": "oss-ap-south-1.aliyuncs.com",
+    "oss-eu-central-1": "oss-eu-central-1.aliyuncs.com",
+    "oss-eu-west-1": "oss-eu-west-1.aliyuncs.com",
+    "oss-me-east-1": "oss-me-east-1.aliyuncs.com",
+}
+
+
+def endpoint_to_region(endpoint):
+    for region in region_to_endpoint:
+        if endpoint == region_to_endpoint[region]:
+            return region
+    return None
+
 
 def load_credential_from_local():
     config = configparser.ConfigParser()
     config.read(os.path.join(os.path.expanduser("~"), ".ossutilconfig"))
-    access_key_id = config["Credentials"]["accessKeyID"]
-    access_key_secret = config["Credentials"]["accessKeySecret"]
     return {
-        "access_key_id": config["Credentials"]["accessKeyID"],
-        "access_key_secret": config["Credentials"]["accessKeySecret"],
+        "accessKeyID": config["Credentials"]["accessKeyID"],
+        "accessKeySecret": config["Credentials"]["accessKeySecret"],
         "endpoint": config["Credentials"]["endpoint"],
+        "region": endpoint_to_region(config["Credentials"]["endpoint"]),
+        "regionID": endpoint_to_region(config["Credentials"]["endpoint"])[4:],
     }
 
 

@@ -7,17 +7,19 @@ import util
 import urllib
 
 config = util.load_credential_from_local()
-access_key_id = config["access_key_id"]
-access_key_secret = config["access_key_secret"]
+access_key_id = config["accessKeyID"]
+access_key_secret = config["accessKeySecret"]
+region_id = config["regionID"]
+region = config["region"]
 
 
 def preview():
     # https://help.aliyun.com/document_detail/74947.html?spm=a2c4g.11186623.2.22.335226c5dUnarR
     res = requests.get("https://preview.imm.aliyuncs.com/index.html", params={
-        "url": "https://hatlonely-test-bucket.oss-cn-beijing.aliyuncs.com/hello.docx/imm",
+        "url": "https://hatlonely-test-bucket.{}.aliyuncs.com/hello.docx/imm".format(region),
         "accessKeyId": access_key_id,
         "accessKeySecret": access_key_secret,
-        "region": "oss-cn-beijing",
+        "region": region,
         "bucket": "hatlonely-test-bucket"
     })
     print(urllib.parse.unquote(res.url))
@@ -33,7 +35,7 @@ def convert():
         "Project": "ossdocdefault",
         "Format": "JSON",
         "AccessKeyId": access_key_id,
-        "RegionId": "cn-beijing",
+        "RegionId": region_id,
         "Bucket": "hatlonely-test-bucket",
         "Version": "2017-09-06",
         "Timestamp": datetime.datetime.utcnow().isoformat(),
@@ -45,10 +47,10 @@ def convert():
         "TgtType": "vector",
         "TgtUri": "oss://hatlonely-test-bucket/hello.docx/imm"
     }
-
     params["Signature"] = util.signature("POST", params, access_key_secret)
 
-    res = requests.post("https://imm.cn-beijing.aliyuncs.com", params=params)
+    res = requests.post(
+        "https://imm.{}.aliyuncs.com".format(region_id), params=params)
     print(res)
     print(res.content)
 
