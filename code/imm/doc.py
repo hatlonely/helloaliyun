@@ -25,10 +25,6 @@ def preview():
     print(urllib.parse.unquote(res.url))
 
 
-def encode(message):
-    return urllib.parse.quote(str(message), safe='', encoding="utf-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~")
-
-
 def convert():
     random.seed()
     params = {
