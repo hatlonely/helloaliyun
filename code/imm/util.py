@@ -56,8 +56,9 @@ def encode(message):
 
 
 def signature(methods, params, access_key_secret):
-    kvs = "&".join(["{}={}".format(encode(i), encode(params[i]))
-                    for i in sorted(params)])
+    kvs = "&".join([
+        "{}={}".format(encode(i), encode(params[i])) for i in sorted(params)
+    ])
     to_sign = methods + "&" + encode("/") + "&" + "" + encode(kvs)
     return base64.b64encode(hmac.new((access_key_secret + '&').encode(), to_sign.encode(), digestmod='sha1').digest()).decode()
 
