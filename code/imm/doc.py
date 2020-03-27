@@ -14,8 +14,9 @@ access_key_secret = config["accessKeySecret"]
 region_id = config["regionID"]
 region = config["region"]
 endpoint = config["endpoint"]
-bucket = 'hatlonely-test-bucket'
+bucket = 'hatlonely-bucket-hz'
 
+random.seed()
 
 def put_object(filename):
     auth = oss2.Auth(access_key_id, access_key_secret)
@@ -30,7 +31,6 @@ def del_object(filename):
 
 
 def convert(filename, type):
-    random.seed()
     params = {
         "Project": "ossdocdefault",
         "Format": "JSON",
@@ -67,6 +67,29 @@ def preview(filename):
     print(urllib.parse.unquote(res.url))
 
 
+def preview_v2(filename):
+    # https://help.aliyun.com/document_detail/151008.html?spm=a2c4g.11186623.6.565.438961e3tw4LHs
+    params = {
+        "Project": "ossdocdefault",
+        "Format": "JSON",
+        "AccessKeyId": access_key_id,
+        "RegionId": region_id,
+        "Bucket": bucket,
+        "Version": "2017-09-06",
+        "Timestamp": datetime.datetime.utcnow().isoformat(),
+        "SignatureMethod": "HMAC-SHA1",
+        "SignatureVersion": "1.0",
+        "SignatureNonce": random.randint(0, 2**63-1),
+        "Action": "GetOfficePreviewURL",
+        "SrcUri": "oss://{}/{}".format(bucket, filename),
+    }
+    params["Signature"] = util.signature("POST", params, access_key_secret)
+
+    res = requests.post(
+        "https://imm.{}.aliyuncs.com".format(region_id), params=params)
+    print(res)
+    print(res.text)
+
 def main():
     put_object("../asset/test.docx")
     convert("test.docx", "png")
@@ -75,6 +98,7 @@ def main():
     convert("test.docx", "pdf")
     convert("test.docx", "vector")
     preview("test.docx")
+    preview_v2("test.docx")
 
 
 if __name__ == "__main__":
