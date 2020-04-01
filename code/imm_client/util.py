@@ -9,6 +9,7 @@ import unittest
 import datetime
 import random
 
+
 def load_credential_from_local(filename):
     config = configparser.ConfigParser()
     config.read(filename)
@@ -34,6 +35,8 @@ def signature(methods, params, access_key_secret):
 
 
 def make_pop_params(methods, params, access_key_secret):
+    if "Format" not in params:
+        params["Format"] = "JSON"
     if "Version" not in params:
         params["Version"] = "2017-09-06"
     if "Timestamp" not in params:

@@ -5,6 +5,8 @@ import util
 import project
 import os
 import doc
+import sts
+import json
 
 
 def main():
@@ -19,6 +21,8 @@ def main():
     parser.add_argument("-f", "--filename", help="filename")
     parser.add_argument("--src-type", help="src type")
     parser.add_argument("-t", "--tgt-type", help="target type")
+    parser.add_argument("--role", help="role", default="test-ram-account")
+    parser.add_argument("-u", "--uid", help="user id")
     args = parser.parse_args()
 
     if args.config:
@@ -34,6 +38,7 @@ def main():
         region_id = "cn-beijing"
     region = "oss-" + region_id
     endpoint = "https://imm.{}.aliyuncs.com".format(region_id)
+    sts_endpoint = "https://sts.aliyuncs.com"
     if args.project:
         proj = args.project
     if args.bucket:
@@ -43,15 +48,35 @@ def main():
     src_type = args.src_type
     if args.tgt_type:
         tgt_type = args.tgt_type
+    if args.access_key_id:
+        access_key_id = args.access_key_id
+    if args.access_key_secret:
+        access_key_secret = args.access_key_secret
+    if args.uid:
+        uid = args.uid
+    if args.role:
+        role = args.role
+
+    if args.action == "AssumeRole":
+        print(json.dumps(sts.assume_role(sts_endpoint, access_key_id, access_key_secret, uid, role)))
+        return
+
+    security_token = ''
+    if args.uid and args.role:
+        res = sts.assume_role(sts_endpoint, access_key_id, access_key_secret, uid, role)
+        print(json.dumps(res))
+        access_key_id = res["Credentials"]["AccessKeyId"]
+        access_key_secret = res["Credentials"]["AccessKeySecret"]
+        security_token = res["Credentials"]["SecurityToken"]
 
     if args.action == "ListProjects":
-        project.list_projects(endpoint, access_key_id, access_key_secret, region_id)
+        project.list_projects(endpoint, access_key_id, access_key_secret, security_token, region_id)
     elif args.action == "PutProject":
-        project.put_project(endpoint, access_key_id, access_key_secret, proj, region_id)
+        project.put_project(endpoint, access_key_id, access_key_secret, security_token, proj, region_id)
     elif args.action == "GetProject":
-        project.get_project(endpoint, access_key_id, access_key_secret, proj, region_id)
+        project.get_project(endpoint, access_key_id, access_key_secret, security_token, proj, region_id)
     elif args.action == "DelProject":
-        project.del_project(endpoint, access_key_id, access_key_secret, proj, region_id)
+        project.del_project(endpoint, access_key_id, access_key_secret, security_token, proj, region_id)
     elif args.action == "ConvertOfficeFormat":
         doc.convert_office_format(endpoint, access_key_id, access_key_secret, proj, region_id, bucket, filename, src_type, tgt_type)
     elif args.action == "preview":
