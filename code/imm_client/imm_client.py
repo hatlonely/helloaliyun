@@ -10,7 +10,11 @@ import json
 
 
 def main():
-    parser = argparse.ArgumentParser(description="imm client")
+    parser = argparse.ArgumentParser(description="""imm client
+    Example:
+        python3 imm_client.py -a ListProjects -r hz
+        python3 imm_client.py -a ListProjects -r hz -c ~/.ossutilconfig.immtest -e http://imm.hele.aliyuncs.com
+    """)
     parser.add_argument("-c", "--config", help="config path", default=os.path.join(os.path.expanduser("~"), ".ossutilconfig"))
     parser.add_argument("-r", "--region", help="region")
     parser.add_argument("-i", "--access-key-id", help="access key id")
@@ -23,6 +27,7 @@ def main():
     parser.add_argument("-t", "--tgt-type", help="target type")
     parser.add_argument("--role", help="role", default="test-ram-account")
     parser.add_argument("-u", "--uid", help="user id")
+    parser.add_argument("-e", "--endpoint", help="endpoint")
     args = parser.parse_args()
 
     if args.config:
@@ -39,6 +44,9 @@ def main():
     region = "oss-" + region_id
     endpoint = "https://imm.{}.aliyuncs.com".format(region_id)
     sts_endpoint = "https://sts.aliyuncs.com"
+    if args.endpoint:
+        endpoint = args.endpoint
+
     if args.project:
         proj = args.project
     if args.bucket:
