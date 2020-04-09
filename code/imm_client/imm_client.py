@@ -88,7 +88,7 @@ def main():
     elif args.action == "ConvertOfficeFormat":
         doc.convert_office_format(endpoint, access_key_id, access_key_secret, proj, region_id, bucket, filename, src_type, tgt_type)
     elif args.action == "preview":
-        doc.preview(access_key_id, access_key_secret, proj, region, bucket, filename)
+        doc.preview(access_key_id, access_key_secret, proj, region, bucket, filename, security_token)
     elif args.action == "GetOfficePreviewURL":
         doc.get_office_preview_url(endpoint, access_key_id, access_key_secret, proj, region_id, bucket, filename)
 
