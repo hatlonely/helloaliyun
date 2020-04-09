@@ -14,6 +14,7 @@ def main():
     Example:
         python3 imm_client.py -a ListProjects -r hz
         python3 imm_client.py -a ListProjects -r hz -c ~/.ossutilconfig.immtest -e http://imm.hele.aliyuncs.com
+        python3 imm_client.py -a preview -r bj -b hatlonely-test-bucket -f test.docx -p ossdocdefault -c ~/.ossutilconfig.hatlonely.sub.test-account-robot -u 1509106610405543 --role "test-ram-account"
     """)
     parser.add_argument("-c", "--config", help="config path", default=os.path.join(os.path.expanduser("~"), ".ossutilconfig"))
     parser.add_argument("-r", "--region", help="region")
